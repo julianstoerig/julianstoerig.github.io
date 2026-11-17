@@ -40,3 +40,36 @@ pre, code { background: var(--code-bg); font-family: ui-monospace, monospace; fo
 pre { padding: 0.75rem; overflow-x: auto; }
 code { padding: 0.1em 0.3em; }
 pre code { padding: 0; }
+
+/* Math (MathML, rendered natively by the browser) */
+math { font-size: 1.1em; }
+math[display="block"] { margin: 1rem 0; }
+p:has(> math[display="block"]) { overflow-x: auto; }
+
+/* Syntax highlighting: pandoc emits token classes, we pick the colours. */
+:root {
+  --tok-keyword: #7a3e9d;
+  --tok-type: #0b5cad;
+  --tok-string: #0b6e4f;
+  --tok-number: #b34700;
+  --tok-comment: #5c5c5c;
+  --tok-error: #b00020;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tok-keyword: #d19af0;
+    --tok-type: #7ab4f0;
+    --tok-string: #7fd0a8;
+    --tok-number: #f0a060;
+    --tok-comment: #9a9a9a;
+    --tok-error: #ff8080;
+  }
+}
+
+code span.kw, code span.cf, code span.im, code span.pp { color: var(--tok-keyword); }
+code span.dt, code span.bu, code span.cn, code span.fu { color: var(--tok-type); }
+code span.st, code span.ss, code span.vs, code span.ch, code span.sc { color: var(--tok-string); }
+code span.dv, code span.bn, code span.fl { color: var(--tok-number); }
+code span.co, code span.do, code span.an, code span.cv, code span.in { color: var(--tok-comment); font-style: italic; }
+code span.al, code span.er, code span.wa { color: var(--tok-error); }

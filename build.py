@@ -76,6 +76,11 @@ def atom_date(date):
     return f"{date}T00:00:00Z"
 
 
+def absolute(body):
+    """Make root-relative links absolute: feed readers have no site to resolve them against."""
+    return body.replace('href="/', f'href="{SITE_URL}/').replace('src="/', f'src="{SITE_URL}/')
+
+
 def write_feed(articles):
     recent = articles[:FEED_LIMIT]
     entries = "\n".join(
@@ -86,7 +91,7 @@ def write_feed(articles):
 <published>{atom_date(a["published"])}</published>
 <updated>{atom_date(a["updated"])}</updated>
 <summary type="html">{html.escape(a["summary"])}</summary>
-<content type="html">{html.escape(a["body"])}</content>
+<content type="html">{html.escape(absolute(a["body"]))}</content>
 </entry>"""
         for a in recent
     )
