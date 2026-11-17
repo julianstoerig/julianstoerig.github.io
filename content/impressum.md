@@ -11,7 +11,7 @@ Münchener Str. 11\
 82211 Herrsching\
 Deutschland
 
-Email: [julian.stoerig+site@gmail.com](mailto:julian.stoerig+site@gmail.com)
+Email: [julian.stoerig+impressum@gmail.com](mailto:julian.stoerig+impressum@gmail.com)
 
 ## Privacy
 
