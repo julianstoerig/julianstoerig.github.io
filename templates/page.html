@@ -20,11 +20,9 @@ $body$
 $if(changelog)$
 <section class="changelog">
 <h2>Changelog</h2>
-<ul>
 $for(changelog)$
-<li><time datetime="$it.date$">$it.date$</time>: $it.note$</li>
+<p><time datetime="$it.date$">$it.date$</time>: $it.note$</p>
 $endfor$
-</ul>
 </section>
 $endif$
 $if(published)$
@@ -33,6 +31,7 @@ $endif$
 </article>
 </main>
 <footer>
+<a href="/">Home</a> ·
 <a href="/impressum/">Impressum &amp; privacy</a>
 </footer>
 </body>

@@ -57,8 +57,8 @@ def load_article(path):
 
 def write_index(articles):
     items = "\n".join(
-        f'<li><a href="/{a["slug"]}/">{a["title"]}</a>'
-        f' <time datetime="{a["published"]}">{a["published"]}</time><br>{a["summary"]}</li>'
+        f'<p><a href="/{a["slug"]}/">{a["title"]}</a>'
+        f' <time datetime="{a["published"]}">{a["published"]}</time><br>{a["summary"]}</p>'
         for a in articles
     )
     page = pandoc(
@@ -67,7 +67,7 @@ def write_index(articles):
         "--variable", "lang=en",
         "--variable", f"site-title={SITE_TITLE}",
         "--metadata", "title=Articles",
-        stdin=f"<ul>\n{items}\n</ul>\n",
+        stdin=items + "\n",
     )
     (OUT / "index.html").write_text(page)
 

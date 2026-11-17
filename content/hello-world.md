@@ -17,5 +17,3 @@ $$f_0 = \frac{1}{2\pi\sqrt{LC}}$$
 def hello():
     return "73 de DD4JS"
 ```
-
-Back to the [article list](/).
