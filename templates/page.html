@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="$lang$">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$pagetitle$ – $site-title$</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+<a href="/">$site-title$</a>
+</header>
+<main>
+<article>
+<h1>$title$</h1>
+$if(published)$
+<p class="meta">Published <time datetime="$published$">$published$</time></p>
+$endif$
+$body$
+$if(changelog)$
+<section class="changelog">
+<h2>Changelog</h2>
+<ul>
+$for(changelog)$
+<li><time datetime="$it.date$">$it.date$</time>: $it.note$</li>
+$endfor$
+</ul>
+</section>
+$endif$
+$if(published)$
+<p class="reply"><a href="mailto:$email$?subject=Re: $title$">Reply by email</a></p>
+$endif$
+</article>
+</main>
+<footer>
+<a href="/impressum/">Impressum &amp; privacy</a>
+</footer>
+</body>
+</html>
