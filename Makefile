@@ -1,6 +1,7 @@
 # Build the site into _site/ with pandoc.  Usage: make | make serve | make clean
 
-PANDOC     ?= pandoc
+# Prefer the pinned pandoc from tools/install-pandoc.sh over any system one.
+PANDOC     ?= $(firstword $(wildcard $(HOME)/.local/bin/pandoc) pandoc)
 SITE_TITLE := DD4JS
 EMAIL      := julian.stoerig+site@gmail.com
 SITE_URL   := https://julianstoerig.github.io
