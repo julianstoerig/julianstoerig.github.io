@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the index page and Atom feed from content/*.md.
+"""Build the article list (/articles/) and Atom feed from content/*.md.
 
 Pandoc does all the Markdown work, including reading the front matter
 (via templates/meta.json), so this script needs only the standard library.
@@ -55,7 +55,7 @@ def load_article(path):
     }
 
 
-def write_index(articles):
+def write_article_list(articles):
     items = "\n".join(
         f'<p><a href="/{a["slug"]}/">{a["title"]}</a>'
         f' <time datetime="{a["published"]}">{a["published"]}</time><br>{a["summary"]}</p>'
@@ -69,7 +69,8 @@ def write_index(articles):
         "--metadata", "title=Articles",
         stdin=items + "\n",
     )
-    (OUT / "index.html").write_text(page)
+    (OUT / "articles").mkdir(exist_ok=True)
+    (OUT / "articles" / "index.html").write_text(page)
 
 
 def atom_date(date):
@@ -114,7 +115,7 @@ def main():
     articles = [a for a in articles if a]
     articles.sort(key=lambda a: a["published"], reverse=True)
     OUT.mkdir(exist_ok=True)
-    write_index(articles)
+    write_article_list(articles)
     write_feed(articles)
 
 
