@@ -16,3 +16,6 @@ code span.st, code span.ss, code span.vs, code span.ch, code span.sc { color: li
 code span.dv, code span.bn, code span.fl { color: light-dark(#b34700, #f0a060); }
 code span.co, code span.do, code span.an, code span.cv, code span.in { color: light-dark(#5c5c5c, #9a9a9a); }
 code span.al, code span.er, code span.wa { color: light-dark(#b00020, #ff8080); }
+
+/* The image beside the home heading sits on the text baseline; the drawing has a margin below it. */
+h1 img { vertical-align: -2pt; }
