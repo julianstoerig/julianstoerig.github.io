@@ -14,7 +14,7 @@ I did an internship at the DLR and now work there part-time. My work involves RF
 
 ## Education
 
-Bachelor in Electrical engineering and information technology, Hochschule München. Currently studying.
+Bachelor's degree in electrical engineering and information technology, Hochschule München. Currently studying.
 
 ## Amateur radio
 
