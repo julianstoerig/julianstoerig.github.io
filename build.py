@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Build the article list (/articles/) and Atom feed from content/*.md.
+"""Build the article list (/articles/) and Atom feed from content/.
 
+A source is either content/<slug>.md or content/<slug>/index.md.
 Pandoc does all the Markdown work, including reading the front matter
 (via templates/meta.json), so this script needs only the standard library.
 Configuration comes from the environment (set by the Makefile).
@@ -8,6 +9,7 @@ Configuration comes from the environment (set by the Makefile).
 import html
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -29,7 +31,20 @@ def pandoc(*args, stdin=None):
     return result.stdout
 
 
-def load_article(path):
+def find_sources():
+    """return {slug: path} for content/<slug>.md and content/<slug>/index.md"""
+    candidates = [(path.stem, path) for path in sorted(CONTENT.glob("*.md"))]
+    candidates += [(path.parent.name, path) for path in sorted(CONTENT.glob("*/index.md"))]
+
+    sources = {}
+    for slug, path in candidates:
+        if slug in sources:
+            raise ValueError(f"two sources for /{slug}/: {sources[slug]} and {path}")
+        sources[slug] = path
+    return sources
+
+
+def load_article(slug, path):
     """Return a dict describing one article, or None if it is not published.
 
     Text fields (title, summary, changelog notes) are HTML strings,
@@ -43,7 +58,7 @@ def load_article(path):
 
     changelog = meta.get("changelog", [])
     return {
-        "slug": path.stem,
+        "slug": slug,
         "title": meta["title"],
         "summary": meta.get("summary", ""),
         "published": meta["published"],
@@ -77,9 +92,27 @@ def atom_date(date):
     return f"{date}T00:00:00Z"
 
 
-def absolute(body):
-    """Make root-relative links absolute: feed readers have no site to resolve them against."""
-    return body.replace('href="/', f'href="{SITE_URL}/').replace('src="/', f'src="{SITE_URL}/')
+LINK = re.compile(r'(href|src)="([^"]*)"')
+HAS_SCHEME = re.compile(r"[a-zA-Z][a-zA-Z0-9+.-]*:")
+
+
+def absolute(body, slug):
+    """Make links absolute: feed readers have no site to resolve them against.
+
+    A root-relative link (/other/) is resolved against the site, any other
+    relative link (figure.svg) against the article's own folder. Anchors,
+    protocol-relative links and links with a scheme (https:, mailto:) stay as they are.
+    """
+
+    def fix(match):
+        attribute, target = match.groups()
+        if target.startswith(("#", "//")) or HAS_SCHEME.match(target):
+            return match.group(0)
+        if target.startswith("/"):
+            return f'{attribute}="{SITE_URL}{target}"'
+        return f'{attribute}="{SITE_URL}/{slug}/{target}"'
+
+    return LINK.sub(fix, body)
 
 
 def write_feed(articles):
@@ -92,7 +125,7 @@ def write_feed(articles):
 <published>{atom_date(a["published"])}</published>
 <updated>{atom_date(a["updated"])}</updated>
 <summary type="html">{html.escape(a["summary"])}</summary>
-<content type="html">{html.escape(absolute(a["body"]))}</content>
+<content type="html">{html.escape(absolute(a["body"], a["slug"]))}</content>
 </entry>"""
         for a in recent
     )
@@ -111,7 +144,7 @@ def write_feed(articles):
 
 
 def main():
-    articles = [load_article(path) for path in sorted(CONTENT.glob("*.md"))]
+    articles = [load_article(slug, path) for slug, path in find_sources().items()]
     articles = [a for a in articles if a]
     articles.sort(key=lambda a: a["published"], reverse=True)
     OUT.mkdir(exist_ok=True)

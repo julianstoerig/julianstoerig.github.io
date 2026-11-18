@@ -44,14 +44,15 @@ Lists have no place in the markup of the article list or the changelog. Their en
 | --- | --- | --- |
 | `/` | `content/home.md` | Home page with links to the rest |
 | `/articles/` | written by `build.py` | Article list, newest first |
-| `/<slug>/` | `content/<slug>.md` | An article or a page |
+| `/<slug>/` | `content/<slug>.md` or `content/<slug>/index.md` | An article or a page |
+| `/<slug>/<file>` | `content/<slug>/<file>` | A figure or data file of that article |
 | `/about-me/` | `content/about-me.md` | Biography |
 | `/impressum/` | `content/impressum.md` | Impressum and privacy note |
 | `/feed.xml` | written by `build.py` | Atom feed |
 
 The footer on every page links to Home, Articles, About me, Feed and the Impressum. Every page links to everything, so no further navigation is needed. Each page is written as `<slug>/index.html`, which gives clean URLs.
 
-Links in content are root-relative, such as `/articles/`. They work in the local preview and survive a domain change. Only the feed gets absolute links, which `build.py` rewrites, because feed readers have no site to resolve relative links against.
+Links in content are root-relative, such as `/articles/`. They work in the local preview and survive a domain change. Only the feed gets absolute links, which `build.py` rewrites, because feed readers have no site to resolve relative links against. Root-relative links are resolved against the site and relative links such as `figure.svg` against the article's folder. Anchors, links with a scheme and protocol-relative links stay as they are.
 
 ## Feed
 
@@ -62,6 +63,16 @@ The feed is Atom, holds the 20 most recently published articles, and contains th
 Each article ends with a "Reply by email" link with a prefilled subject. That needs no comment system, and so no JavaScript and no third party. Mastodon or Webmentions can be added later.
 
 The site and the Impressum use different `+tag` addresses. The tag shows where an address was harvested, which helps to trace spam.
+
+## Writing and publishing
+
+Unpublished work does not belong in this repository. It is public, and anything committed to a pushed branch is visible and stays in the history. Drafts, raw measurements and the scripts that produce the figures live in a separate private repository, `writing`, with one folder per article. Only the finished article and the figures it needs are copied here.
+
+An article with figures or data is a folder, `content/<slug>/index.md`, with those files next to it. The article is published at `/<slug>/` and the other files at `/<slug>/<file>`, so the text refers to them by relative path, for example `![](figure.svg)`. A page without extra files stays a single `content/<slug>.md`. Keeping an article and its files in one folder means that removing the article removes its files too.
+
+To publish, make a branch `article/<slug>`, copy the article and its figures into `content/<slug>/`, and add `published` and the first `changelog` entry to the front matter. Then check the result with `make serve`, merge into `main` as a fast-forward and push `main` to `deploy`.
+
+A slug may exist only once, either as a file or as a folder. `build.py` stops with an error if both exist.
 
 ## Hosting and deployment
 
@@ -83,9 +94,9 @@ One page, `/impressum/`, holds the Impressum that German law requires and a shor
 
 ## Build flow
 
-1. `make` renders every `content/*.md` to `_site/<slug>/index.html` with one pandoc template, MathML for math (`--math-method=mathml`) and class-based syntax highlighting. `content/home.md` goes to `_site/index.html`.
+1. `make` renders every `content/<slug>.md` and `content/<slug>/index.md` to `_site/<slug>/index.html` with one pandoc template, MathML for math (`--math-method=mathml`) and class-based syntax highlighting. `content/home.md` goes to `_site/index.html`.
 2. `build.py` reads the metadata of every article through pandoc, then writes `_site/articles/index.html` and `_site/feed.xml`.
-3. Files in `static/` are copied unchanged.
+3. The other files in an article folder are copied next to its page, and files in `static/` are copied unchanged. File names must not contain spaces, because make cannot handle them.
 4. In CI the workflow installs the pinned pandoc, runs `make` and uploads `_site` to Pages.
 
 ## Rejected or deferred
