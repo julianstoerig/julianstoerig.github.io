@@ -42,6 +42,19 @@ The same file is shown in front of the site title at the top of every page. The 
 
 Lists have no place in the markup of the article list or the changelog. Their entries are plain paragraphs.
 
+## Requests
+
+The browser reads the HTML first and only then learns what else the page needs. A resource named in the HTML can be fetched at once, in parallel with the others. A resource that is named only inside another resource, such as an image in a stylesheet or a file imported by a script, has to wait for that resource. That makes a chain, and every link in a chain is one more round trip, which is felt most on a slow mobile connection.
+
+The rule is therefore that the dependency tree is one level deep. The page is the root, and every other resource is referenced directly from its HTML. Today those are the stylesheet and the icon, which the browser fetches together. In practice this means the following.
+
+- Images go into the page with `<img>`, so they load at the same time as the stylesheet. CSS does not use `url()` or `@import`, and images are never CSS backgrounds.
+- Figures drawn as SVG are self-contained and do not reference other files.
+- A script is loaded with a `<script>` tag in the page and does not load further scripts or data by itself. Scripts are optional extras anyway.
+- Fonts are the system's own, so no font file is fetched.
+
+Lighthouse's "Network dependency tree" shows this. Below the document it should list only direct children.
+
 ## Pages and URLs
 
 | URL | Source | Purpose |
@@ -111,6 +124,7 @@ One page, `/impressum/`, holds the Impressum that German law requires and a shor
 - Comment widgets (Giscus, Disqus): they need JavaScript and third parties.
 - Mastodon and Webmentions for replies: possible later.
 - A hand-picked colour scheme and fonts: dropped in favour of browser defaults, to keep the CSS small.
+- Inlining the stylesheet into every page, to save the one request for it: Lighthouse shows that request as a chain of two after the document. Inlining would save about 20 ms on a fast connection and a round trip on a slow one. It would also repeat about 0.6 KiB per page and move the CSS into the template. Left as a separate file; the rule above keeps the chain from growing.
 
 ## Open
 
