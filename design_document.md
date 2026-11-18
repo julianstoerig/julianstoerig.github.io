@@ -36,7 +36,7 @@ JavaScript is allowed only for optional extras such as a calculator. Reading a p
 
 The stylesheet relies on browser defaults. It sets only what the defaults do not give: the browser's own light or dark scheme (`color-scheme: light dark`), a text column of readable width, scrolling for wide code and equations, and the code colours. The aim is to change less, not to imitate the default look with more CSS, so fonts, colours and dark mode are decided by the reader's browser.
 
-The favicon is one SVG file, `static/favicon.svg`: a spectrum-analyser trace, a flat noise floor with small ripples and one narrow carrier spike in the middle. A vector icon stays sharp at any size and is a few hundred bytes. It is drawn in one colour with plain attributes, and a `prefers-color-scheme` rule inside the file turns it white on dark browser themes. There is no `favicon.ico`, because current browsers take the SVG.
+The favicon is one SVG file, `static/favicon.svg`: a spectrum plot reduced to its axes and two narrow carrier peaks. Fine detail such as ripples on the noise floor was tried and dropped, because it is lost at the 16 px size of a browser tab. A vector icon stays sharp at any size and is a few hundred bytes. It is drawn in one colour with plain attributes, and a `prefers-color-scheme` rule inside the file turns it white on dark browser themes. There is no `favicon.ico`, because current browsers take the SVG.
 
 The same file is shown beside the heading of the home page. A page asks for this with `icon: /favicon.svg` in its front matter, and the template adds a decorative image of fixed size in front of the title. Sizing it with attributes means no CSS is needed.
 
