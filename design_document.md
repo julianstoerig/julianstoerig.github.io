@@ -29,7 +29,7 @@ Currently nothing uses JS. Eventually maybe some e.g. calculators might. Minimal
 
 ## Looks
 
-Browser defaults. Minimal CSS: a readable column width, scrolling for code & equations, a site title and code colours.
+Browser defaults. Minimal CSS: a readable column width, images that shrink to the column, scrolling for code & equations, a site title and code colours.
 
 The site title is large and links home. It is a paragraph, not a heading, so every page keeps its own single `h1`, and the home page has none. The favicon sits in front of it, larger than the text and hanging below the baseline.
 

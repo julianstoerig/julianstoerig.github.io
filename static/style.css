@@ -6,6 +6,9 @@
 /* Without this, lines are as wide as the window. */
 body { max-width: 40rem; margin: 0 auto; padding: 0 1rem; }
 
+/* Images shrink to the column instead of overflowing it. The width and height attributes keep their ratio. */
+img { max-width: 100%; height: auto; }
+
 /* Long lines of code and wide equations scroll instead of widening the page. */
 pre, p:has(> math[display="block"]) { overflow-x: auto; }
 
