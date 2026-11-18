@@ -2,7 +2,7 @@
 title: About me
 ---
 
-![The 30 m antenna in Weilheim.](figures/antenna-stairs.jpg){alt="Julian on a metal stairway below the reflector of a large antenna dish, looking up." width=420 height=623}
+![The author and the 30 m antenna at DLR Weilheim.](figures/antenna-stairs.webp){alt="Julian on a metal stairway below the reflector of a large antenna dish, looking up." width=420 height=623}
 
 ## Short bio
 
@@ -24,4 +24,4 @@ My current and first callsign is DD4JS and CW is the mode I enjoy most.
 I'm a member of the DARC at OV C28.
 You can find me on [QRZ.com](https://www.qrz.com/db/DD4JS).
 
-![Demo of an in-orbit spacecraft test setup.](figures/measurement-rack.jpg){alt="Rack of RF measurement instruments with a spectrum analyser on top and signal generators below, next to a monitor showing test software. A paper model of an antenna stands on the rack." width=560 height=422}
+![In-orbit spacecraft test demo at DLR Oberpfaffenhofen.](figures/measurement-rack.webp){alt="Rack of RF measurement instruments with a spectrum analyser on top and signal generators below, next to a monitor showing test software. A paper model of an antenna stands on the rack." width=560 height=422}
