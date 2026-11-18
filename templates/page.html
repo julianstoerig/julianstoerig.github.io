@@ -9,11 +9,13 @@
 </head>
 <body>
 <header>
-<a href="/">$site-title$</a>
+<p><a href="/"><img src="/favicon.svg" alt="" width="26" height="23"> $site-title$</a></p>
 </header>
 <main>
 <article>
-<h1>$if(icon)$<img src="$icon$" alt="" width="32" height="28"> $endif$$title$</h1>
+$if(title)$
+<h1>$title$</h1>
+$endif$
 $if(published)$
 <p class="meta">Published <time datetime="$published$">$published$</time></p>
 $endif$

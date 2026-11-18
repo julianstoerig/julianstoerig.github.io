@@ -34,11 +34,11 @@ JavaScript is allowed only for optional extras such as a calculator. Reading a p
 
 ## Look
 
-The stylesheet relies on browser defaults. It sets only what the defaults do not give: the browser's own light or dark scheme (`color-scheme: light dark`), a text column of readable width, scrolling for wide code and equations, and the code colours. The aim is to change less, not to imitate the default look with more CSS, so fonts, colours and dark mode are decided by the reader's browser.
+The stylesheet relies on browser defaults. It sets only what the defaults do not give: the browser's own light or dark scheme (`color-scheme: light dark`), a text column of readable width, scrolling for wide code and equations, the size and plain colour of the site title, and the code colours. The aim is to change less, not to imitate the default look with more CSS, so fonts, colours and dark mode are decided by the reader's browser.
 
 The favicon is one SVG file, `static/favicon.svg`: a spectrum plot reduced to its axes and two narrow carrier peaks. Fine detail such as ripples on the noise floor was tried and dropped, because it is lost at the 16 px size of a browser tab. A vector icon stays sharp at any size and is a few hundred bytes. It is drawn in one colour with plain attributes, and a `prefers-color-scheme` rule inside the file turns it white on dark browser themes. There is no `favicon.ico`, because current browsers take the SVG.
 
-The same file is shown beside the heading of the home page. A page asks for this with `icon: /favicon.svg` in its front matter, and the template adds a decorative image of fixed size in front of the title. Sizing it with attributes means no CSS is needed.
+The same file is shown in front of the site title at the top of every page. The site title is large, in the text colour, and links to the home page. It is a plain paragraph and not a heading, so each page keeps the one `h1` of its own title. The home page has no `h1`, because its title is the site title. The icon is a decorative image of fixed size, and one CSS rule puts it on the text baseline.
 
 Lists have no place in the markup of the article list or the changelog. Their entries are plain paragraphs.
 

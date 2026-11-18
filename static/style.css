@@ -17,5 +17,7 @@ code span.dv, code span.bn, code span.fl { color: light-dark(#b34700, #f0a060); 
 code span.co, code span.do, code span.an, code span.cv, code span.in { color: light-dark(#5c5c5c, #9a9a9a); }
 code span.al, code span.er, code span.wa { color: light-dark(#b00020, #ff8080); }
 
-/* The image beside the home heading sits on the text baseline; the drawing has a margin below it. */
-h1 img { vertical-align: -2pt; }
+/* The site title at the top of every page: large, in the text colour, with its icon on the baseline. */
+header { font-size: 1.6em; font-weight: bold; }
+header a { color: inherit; text-decoration: none; }
+header img { vertical-align: -1.6pt; }
