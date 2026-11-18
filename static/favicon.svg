@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 2 32 28">
-<style>
-@media (prefers-color-scheme: dark) {
-  path { stroke: #fff; }
-}
-</style>
-<path d="M2 27H3L6 15L9 27H12L16 4L20 27H23L26 12L29 27H30" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 2 32 28"><style>@media (prefers-color-scheme: dark) { [stroke="#000"] { stroke: #fff; } [fill="#000"] { fill: #fff; } }</style><path d="M2 25H5L7 23L9 26L11 24L13 25H14.6L16 5L17.4 25H19L21 23L23 26L25 24L27 25H30" stroke="#000" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="2.5"/></svg>
