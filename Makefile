@@ -4,7 +4,7 @@
 PANDOC     ?= $(firstword $(wildcard $(HOME)/.local/bin/pandoc) pandoc)
 SITE_TITLE := DD4JS
 EMAIL      := julian.stoerig+site@gmail.com
-SITE_URL   := https://julianstoerig.github.io
+SITE_URL   := https://dd4js.com
 
 # build.py reads its settings from the environment
 export PANDOC SITE_TITLE SITE_URL
