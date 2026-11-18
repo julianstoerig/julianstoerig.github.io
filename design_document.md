@@ -1,16 +1,16 @@
 # Design document
 
-How dd4js.com is built, and why. A later change should start from the reason.
+How and why dd4js.com is built.
 
 ## Goal
 
-A tiny, fast, accessible personal site for things worth keeping and sharing on the topics of amateur radio, electrical & RF engineering and programming.
+A blazingly fast and accessible personal site for stuff worth keeping and sharing on the topics of amateur radio, electrical & RF engineering and programming.
 
 The basic idea is that the site stays small, because what does not exist cannot break. The site is merely a heap of static files. No JS required. Barebones styling, let the browser deal with that.
 
 ## Build
 
-The site is built with pandoc, a Makefile and a Python script. SSGs etc. are rejected for complexity and tech debt.
+The site is built with pandoc, make and python.
 
 `make` renders `content/<slug>.md` and `content/<slug>/index.md` to `_site/<slug>/index.html` through one pandoc template, and `content/home.md` to `_site/index.html`. `build.py` writes the article list and the feed. Other files in article folders and in `static/` are copied as they are. File names must not contain spaces, make cannot handle them.
 
@@ -20,13 +20,16 @@ Pinned pandoc version gets installed into `~/.local` by `tools/install-pandoc.sh
 
 ## Content
 
-Articles are evergreen: a `published` date and a hand-written `changelog` in the front matter. "Last updated" is the newest changelog entry, typo fixes do not count. Pages without `published` (home, About me, Impressum) are not articles and stay out of the list and the feed. English only.
+Articles are evergreen: a `published` date and a hand-written `changelog` in the front matter. "Last updated" is the newest changelog entry. All changes (including "fix typo") are tracked. The source repo is public, so old versions are not kept.
 
-Math is LaTeX in Markdown, converted to MathML at build time. Code is highlighted at build time, the colours are in the CSS. JS only for optional extras like a calculator, every page must read fully without it.
+Pages without `published` (home, About me, Impressum) are not articles but are based on the same template.
 
-## Look
+Math is Markdown LaTex, converted to MathML at build time. Code is highlighted at build time, the colours are in the CSS. 
+Currently nothing uses JS. Eventually maybe some e.g. calculators might. Minimalism here as well.
 
-Browser defaults. The CSS adds only the light/dark scheme, a readable column width, scrolling for wide code & equations, the site title and the code colours. The article list and the changelog are plain paragraphs, no lists.
+## Looks
+
+Browser defaults. Minimal CSS: a readable column width, scrolling for code & equations, a site title and code colours.
 
 The site title is large and links home. It is a paragraph, not a heading, so every page keeps its own single `h1`, and the home page has none. The favicon sits in front of it, larger than the text and hanging below the baseline.
 
@@ -34,7 +37,7 @@ The site title is large and links home. It is a paragraph, not a heading, so eve
 
 ## Requests
 
-The request tree stays one level deep. Everything is referenced directly from the HTML, so the browser fetches it in parallel and no resource waits for another one. That means `<img>` for images and never CSS backgrounds, no `url()` or `@import` in the CSS, self-contained SVG figures, scripts that load nothing further, system fonts. Check with Lighthouse's network dependency tree.
+To reduce load times, all resources must be embedded in or linked to directly from the main html. This way no more than two round trips must ever be made.
 
 ## Pages and URLs
 
@@ -68,18 +71,18 @@ To publish: branch `article/<slug>`, copy the files in, add `published` and the 
 
 ## Hosting and domain
 
-GitHub Pages, deployed by Actions (`.github/workflows/pages.yml`) when `deploy` is pushed. `main` is for working. The Pages source is "GitHub Actions", a branch deploy would serve the raw Markdown.
+The site is hosted on GitHub Pages. It is deployed by Actions (`.github/workflows/pages.yml`) when the branch `deploy` is pushed. `main` is for working.
 
-dd4js.com has `A` and `AAAA` records for GitHub Pages on the apex and a `CNAME` from `www` to the `github.io` address. DNS only, no proxy, or GitHub cannot issue the certificate. The custom domain is set in the Pages settings, a `CNAME` file is ignored for Actions deploys.
+dd4js.com has `A` and `AAAA` records for GitHub Pages IPs on the apex and a `CNAME` from `www` to the `github.io` address. DNS only, no proxy since otherwise GitHub cannot issue the certificate.
 
 ## Rejected or deferred
 
 - Typst HTML export: experimental.
-- Hugo & other SSGs: more than needed.
-- Codeberg Pages: custom-domain TLS problems in 2026.
-- Comment widgets (Giscus, Disqus): JS & third parties.
-- Own colour scheme & fonts: browser defaults instead.
-- Inlining the stylesheet: saves one request (about 20 ms), repeats 0.6 KiB per page. Not worth it.
+- SSGs: overkill.
+- Codeberg/... Pages: TLS-problems, too new.
+- Comment widgets: JS & third parties.
+- More theming: looks worse, larger filesize, less accesibility.
+- Inlining stylesheet: other additional files like images and even the favicon itself negate any benefits.
 
 ## Open
 
