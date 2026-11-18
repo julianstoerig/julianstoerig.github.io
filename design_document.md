@@ -47,7 +47,7 @@ To reduce load times, all resources must be embedded in or linked to directly fr
 | `/articles/` | written by `build.py` | Article list, newest first |
 | `/<slug>/` | `content/<slug>.md` or `content/<slug>/index.md` | An article or a page |
 | `/<slug>/<file>` | `content/<slug>/<file>` | A figure or data file of that article |
-| `/about-me/` | `content/about-me.md` | Biography |
+| `/about-me/` | `content/about-me/index.md` | Biography |
 | `/impressum/` | `content/impressum.md` | Impressum and privacy note |
 | `/feed.xml` | written by `build.py` | Atom feed |
 

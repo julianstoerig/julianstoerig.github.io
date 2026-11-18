@@ -2,6 +2,8 @@
 title: About me
 ---
 
+![](figures/antenna-stairs.jpg){alt="Julian on a metal stairway below the reflector of a large antenna dish, looking up." width=420 height=746}
+
 ## Short bio
 
 I live in Bavaria, Germany.
@@ -21,3 +23,5 @@ Bachelor's degree in electrical engineering and information technology, Hochschu
 My current and first callsign is DD4JS and CW is the mode I enjoy most.
 I'm a member of the DARC at OV C28.
 You can find me on [QRZ.com](https://www.qrz.com/db/DD4JS).
+
+![](figures/measurement-rack.jpg){alt="Rack of RF measurement instruments with a spectrum analyser on top and signal generators below, next to a monitor showing test software. A paper model of an antenna stands on the rack." width=560 height=422}
