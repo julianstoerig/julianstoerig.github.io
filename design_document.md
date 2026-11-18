@@ -1,59 +1,42 @@
 # Design document
 
-How dd4js.com is built, and why. Each entry gives the choice and the reason for it, so that a later change can start from the reason.
+How dd4js.com is built, and why. Each entry gives the choice and its reason, so that a later change can start from the reason.
 
 ## Goal
 
 A tiny, fast, accessible personal site for things worth keeping, sharing, or not retelling: amateur radio, electrical and RF engineering, programming.
 
-This gives four principles. The site stays small, with few tools, few files and little CSS, because that is less to maintain and less to break. Every page works without JavaScript. The host only serves files, so moving means changing the deploy step. Visitors make requests to one host only, so there are no web fonts and no analytics.
+Four principles follow. The site stays small, because every tool and file is something to maintain and something that can break. Every page works without JavaScript. The host only serves files, so a move changes only the deploy step. Visitors contact one host only, hence no web fonts and no analytics.
 
 ## Build
 
-There is no site framework. The site is built with pandoc, a Makefile and one short Python script that uses only the standard library. A framework (Hugo was the alternative) is more than a handful of pages and a feed need, and each dependency is one more thing that can break.
+The site is built with pandoc, a Makefile and one short Python script that uses only the standard library. A framework (Hugo was the alternative) is more than a few pages and a feed need.
 
-`build.py` asks pandoc for each article's metadata as JSON, through the one-line template `templates/meta.json`. The standard library has no YAML parser, and parsing a subset by hand would restrict the front matter and add code to maintain. Pandoc parses the front matter anyway.
+`make` renders each `content/<slug>.md` and `content/<slug>/index.md` to `_site/<slug>/index.html` through one pandoc template, and `content/home.md` to `_site/index.html`. `build.py` then reads the metadata of each article and writes the article list and the feed. The other files of an article folder and of `static/` are copied unchanged. File names must not contain spaces, which make cannot handle.
 
-The pandoc version is pinned. `tools/install-pandoc.sh` installs one exact release into `~/.local` and checks its SHA-256. CI runs the same script, and the Makefile prefers that binary over any system one. The same input must give the same output on every machine, and a distribution's older pandoc has already failed once on a flag it did not know.
+`build.py` obtains the metadata as JSON from pandoc (`templates/meta.json`). The standard library has no YAML parser, and a hand-written one would restrict the front matter and add code to maintain.
+
+The pandoc version is pinned. `tools/install-pandoc.sh` installs one release into `~/.local` after checking its SHA-256, CI runs the same script, and the Makefile prefers that binary. The same input should give the same output on every machine, and an older distribution package has already failed once on an unknown flag.
 
 ## Content
 
-Articles are evergreen. Each has a `published` date and a hand-written `changelog` in the front matter, and "last updated" is the newest changelog entry. Only meaningful edits count, so a typo fix does not. The reader sees what changed and when, and the date means something.
+Articles are evergreen. They carry a `published` date and a hand-written `changelog` in the front matter, and "last updated" is the newest changelog entry. Only meaningful edits count, so that the date keeps its meaning. A page without `published`, such as the Impressum or About me, is not an article and stays out of the article list and the feed. One rule replaces a list of special pages. The language is English.
 
-A page without `published` is not an article and stays out of the article list and the feed. The Impressum and the About me page are such pages. This is one rule, where the alternative would be a separate list of special pages.
-
-The language is English.
-
-## Math and code
-
-Math is kept. It is written as LaTeX in Markdown and converted to MathML at build time, with no JavaScript and no math libraries. The subject needs equations, and MathML renders natively.
-
-Code blocks are highlighted at build time. Pandoc emits token classes and our CSS supplies the colours for light and dark. This costs nothing at runtime and needs no script. The colours are the only part of the CSS that goes beyond browser defaults, because browsers do not colour code.
-
-JavaScript is allowed only for optional extras such as a calculator. Reading a page never depends on it.
+Math is written as LaTeX and converted to MathML at build time, which browsers render natively, so no script is needed. Code blocks are highlighted at build time: pandoc emits token classes and the CSS supplies the colours for light and dark. JavaScript is allowed only for optional extras such as a calculator, and reading a page never depends on it.
 
 ## Look
 
-The stylesheet relies on browser defaults. It sets only what the defaults do not give: the browser's own light or dark scheme (`color-scheme: light dark`), a text column of readable width, scrolling for wide code and equations, the size and plain colour of the site title, and the code colours. The aim is to change less, not to imitate the default look with more CSS, so fonts, colours and dark mode are decided by the reader's browser.
+The stylesheet relies on browser defaults and sets only what they lack: the reader's light or dark scheme, a readable column width, scrolling for wide code and equations, the size and plain colour of the site title, and the code colours. The aim is less CSS, not a custom style that imitates the default. The article list and the changelog are plain paragraphs, not lists.
 
-The favicon is one SVG file, `static/favicon.svg`: a spectrum-analyser screen, a rounded frame around a rippling noise floor with one narrow carrier peak. The frame is heavier than the trace, like the bezel of a display. The drawing is square and the box of the SVG is cropped to it, so that it fills a tab's square, which is fitted by aspect ratio. At the 16 px size of a browser tab the ripples blur and it reads as a frame with a peak. They show at larger sizes and in the site title. A vector icon stays sharp at any size and is a few hundred bytes. It is drawn in one colour with plain attributes, and a `prefers-color-scheme` rule inside the file turns it white on dark browser themes. There is no `favicon.ico`, because current browsers take the SVG.
+The site title at the top of every page links to the home page. It is a paragraph and not a heading, so each page keeps the one `h1` of its own title, and the home page has none. The favicon stands in front of it as a decorative image, larger than the text and hanging below the baseline so that its centre stays near the middle of the lowercase letters.
 
-The same file is shown in front of the site title at the top of every page. The site title is large, in the text colour, and links to the home page. It is a plain paragraph and not a heading, so each page keeps the one `h1` of its own title. The home page has no `h1`, because its title is the site title. The icon is a decorative image of fixed size, larger than the text, and one CSS rule sets how far it hangs below the text baseline so that its centre stays near the middle of the lowercase letters.
-
-Lists have no place in the markup of the article list or the changelog. Their entries are plain paragraphs.
+The favicon is one SVG file, `static/favicon.svg`: a spectrum-analyser screen, a rounded frame around a rippling noise floor with one carrier peak. It is square and cropped to its box, so that it fills a tab, and a rule inside the file turns it white on dark themes. At 16 px the ripples blur, and they show at larger sizes. There is no `favicon.ico`, since current browsers accept the SVG.
 
 ## Requests
 
-The browser reads the HTML first and only then learns what else the page needs. A resource named in the HTML can be fetched at once, in parallel with the others. A resource that is named only inside another resource, such as an image in a stylesheet or a file imported by a script, has to wait for that resource. That makes a chain, and every link in a chain is one more round trip, which is felt most on a slow mobile connection.
+The browser reads the HTML first and only then learns what else is needed. A resource named in the HTML is fetched at once, in parallel with the others. A resource named only inside another one, such as an image in a stylesheet, has to wait for it. Each such link is one more round trip, which is felt most on a slow mobile connection.
 
-The rule is therefore that the dependency tree is one level deep. The page is the root, and every other resource is referenced directly from its HTML. Today those are the stylesheet and the icon, which the browser fetches together. In practice this means the following.
-
-- Images go into the page with `<img>`, so they load at the same time as the stylesheet. CSS does not use `url()` or `@import`, and images are never CSS backgrounds.
-- Figures drawn as SVG are self-contained and do not reference other files.
-- A script is loaded with a `<script>` tag in the page and does not load further scripts or data by itself. Scripts are optional extras anyway.
-- Fonts are the system's own, so no font file is fetched.
-
-Lighthouse's "Network dependency tree" shows this. Below the document it should list only direct children.
+The dependency tree is therefore kept one level deep: the page is the root, and every other resource is referenced directly from its HTML. Images are `<img>` elements and never CSS backgrounds, CSS has no `url()` or `@import`, SVG figures are self-contained, a script is loaded by a `<script>` tag and loads nothing further, and fonts are the system's own. Lighthouse's "Network dependency tree" shows the result and should list only direct children of the document.
 
 ## Pages and URLs
 
@@ -67,54 +50,29 @@ Lighthouse's "Network dependency tree" shows this. Below the document it should 
 | `/impressum/` | `content/impressum.md` | Impressum and privacy note |
 | `/feed.xml` | written by `build.py` | Atom feed |
 
-The footer on every page links to Home, Articles, About me, Feed and the Impressum. Every page links to everything, so no further navigation is needed. Each page is written as `<slug>/index.html`, which gives clean URLs.
+Every page is written as `<slug>/index.html` for clean URLs. Its footer links to Home, Articles, About me, Feed and the Impressum, so no further navigation is needed. A slug may exist once, as a file or as a folder, and `build.py` stops with an error otherwise.
 
-Links in content are root-relative, such as `/articles/`. They work in the local preview and survive a domain change. Only the feed gets absolute links, which `build.py` rewrites, because feed readers have no site to resolve relative links against. Root-relative links are resolved against the site and relative links such as `figure.svg` against the article's folder. Anchors, links with a scheme and protocol-relative links stay as they are.
+Links in content are root-relative (`/articles/`), which works in the local preview and survives a domain change. Only in the feed does `build.py` make them absolute, because feed readers have no site to resolve them against. Links relative to the article folder (`figure.svg`) are resolved against that folder.
 
-## Feed
+The feed is Atom and holds the 20 most recently published articles with their full content. `SITE_URL` in the Makefile is the only place that names the domain, and changing it needs `make clean`, because the Makefile is not a dependency of the output.
 
-The feed is Atom, holds the 20 most recently published articles, and contains their full content. `SITE_URL` in the Makefile is the one place that names the domain. Changing it needs `make clean`, since the Makefile is not a dependency of the output.
+## Replies and legal
 
-## Replies
+Each article ends with a "Reply by email" link with a prefilled subject. That needs no comment system, and so no script and no third party. The site and the Impressum use different `+tag` addresses, so that the tag shows where an address was harvested. Mastodon or Webmentions could be added later.
 
-Each article ends with a "Reply by email" link with a prefilled subject. That needs no comment system, and so no JavaScript and no third party. Mastodon or Webmentions can be added later.
-
-The site and the Impressum use different `+tag` addresses. The tag shows where an address was harvested, which helps to trace spam.
+The Impressum, which German law requires, and a short privacy note share one page. The site sets no cookies and loads nothing from third parties, so the note only names GitHub as the host and its server logs.
 
 ## Writing and publishing
 
-Unpublished work does not belong in this repository. It is public, and anything committed to a pushed branch is visible and stays in the history. Drafts, raw measurements and the scripts that produce the figures live in a separate private repository, `writing`, with one folder per article. Only the finished article and the figures it needs are copied here.
+Unpublished work stays out of this repository, because it is public and anything committed to a pushed branch is visible and stays in the history. Drafts, raw data and the scripts for the figures live in the separate private repository `writing`, with one folder per article. An article with figures or data is published as `content/<slug>/index.md` with those files next to it, referenced by relative path (`![](figure.svg)`). Otherwise it stays a single `content/<slug>.md`.
 
-An article with figures or data is a folder, `content/<slug>/index.md`, with those files next to it. The article is published at `/<slug>/` and the other files at `/<slug>/<file>`, so the text refers to them by relative path, for example `![](figure.svg)`. A page without extra files stays a single `content/<slug>.md`. Keeping an article and its files in one folder means that removing the article removes its files too.
+To publish, the article and its figures are copied into `content/<slug>/` on a branch `article/<slug>`, `published` and the first `changelog` entry are added, and the result is checked with `make serve`. The branch is merged into `main` as a fast-forward, and `main` is pushed to `deploy`.
 
-To publish, make a branch `article/<slug>`, copy the article and its figures into `content/<slug>/`, and add `published` and the first `changelog` entry to the front matter. Then check the result with `make serve`, merge into `main` as a fast-forward and push `main` to `deploy`.
+## Hosting and domain
 
-A slug may exist only once, either as a file or as a folder. `build.py` stops with an error if both exist.
+The site is hosted on GitHub Pages and deployed by GitHub Actions (`.github/workflows/pages.yml`), which installs the pinned pandoc, runs `make` and uploads `_site`. The workflow runs when `deploy` is pushed, so that publishing (`git push origin main:deploy`) is a deliberate step apart from working on `main`. The Pages source is "GitHub Actions", because a branch deploy would serve the raw Markdown: the built output is not in the repository.
 
-## Hosting and deployment
-
-The site is hosted on GitHub Pages and deployed by GitHub Actions (`.github/workflows/pages.yml`). It is free and reliable, and it only serves files.
-
-The workflow runs when `deploy` is pushed. `main` is the working branch, and publishing is `git push origin main:deploy`. That keeps publishing a deliberate step, apart from committing.
-
-The Pages source is "GitHub Actions", not "Deploy from a branch". A branch deploy would serve the raw Markdown, because the built output is not in the repository.
-
-## Domain
-
-The domain is dd4js.com, after the callsign. The apex has `A` and `AAAA` records that point at GitHub Pages, and `www` is a `CNAME` to the `github.io` address. GitHub redirects `www` and the old address to the apex.
-
-DNS runs without a proxy at the DNS provider, because GitHub cannot issue the HTTPS certificate through one. The custom domain is set in the repository's Pages settings. A `CNAME` file in the repository is ignored for Actions deploys.
-
-## Legal
-
-One page, `/impressum/`, holds the Impressum that German law requires and a short privacy note. The site sets no cookies and loads nothing from third parties, so the note is short. It names GitHub as the host and its server logs.
-
-## Build flow
-
-1. `make` renders every `content/<slug>.md` and `content/<slug>/index.md` to `_site/<slug>/index.html` with one pandoc template, MathML for math (`--math-method=mathml`) and class-based syntax highlighting. `content/home.md` goes to `_site/index.html`.
-2. `build.py` reads the metadata of every article through pandoc, then writes `_site/articles/index.html` and `_site/feed.xml`.
-3. The other files in an article folder are copied next to its page, and files in `static/` are copied unchanged. File names must not contain spaces, because make cannot handle them.
-4. In CI the workflow installs the pinned pandoc, runs `make` and uploads `_site` to Pages.
+The domain is dd4js.com, after the callsign. The apex has `A` and `AAAA` records for GitHub Pages, and `www` is a `CNAME` to the `github.io` address, which GitHub redirects to the apex. The DNS provider runs without a proxy, since GitHub cannot issue the HTTPS certificate through one. The custom domain is set in the repository's Pages settings, because a `CNAME` file is ignored for Actions deploys.
 
 ## Rejected or deferred
 
@@ -122,9 +80,8 @@ One page, `/impressum/`, holds the Impressum that German law requires and a shor
 - Hugo: workable, but more framework than needed.
 - Codeberg Pages: was moving to a new system and had custom-domain certificate problems reported in 2026.
 - Comment widgets (Giscus, Disqus): they need JavaScript and third parties.
-- Mastodon and Webmentions for replies: possible later.
 - A hand-picked colour scheme and fonts: dropped in favour of browser defaults, to keep the CSS small.
-- Inlining the stylesheet into every page, to save the one request for it: Lighthouse shows that request as a chain of two after the document. Inlining would save about 20 ms on a fast connection and a round trip on a slow one. It would also repeat about 0.6 KiB per page and move the CSS into the template. Left as a separate file; the rule above keeps the chain from growing.
+- Inlining the stylesheet into every page: it would save the one request that Lighthouse shows as a chain of two, about 20 ms on a fast connection and a round trip on a slow one. It would also repeat about 0.6 KiB per page and move the CSS into the template. Left as a separate file, with the rule under Requests keeping the chain from growing.
 
 ## Open
 
