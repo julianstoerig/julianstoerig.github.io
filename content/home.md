@@ -1,6 +1,7 @@
 ---
 title: DD4JS
 pagetitle: Home
+icon: /favicon.svg
 ---
 
 Hello, I'm Julian Störig.
